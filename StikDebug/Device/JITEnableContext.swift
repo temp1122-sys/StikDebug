@@ -427,6 +427,45 @@ final class JITEnableContext {
         return tunnel
     }
 
+    /// Conditions uses its own RSD session: never borrow or free the shared
+    /// JIT tunnel handles, which can be replaced by startTunnel().
+    func openDeviceConditionsConnection() throws -> DeviceConditionsConnection {
+        var tunnel = try createTunnel(hostname: "StikDebugConditions")
+        var remoteServer: OpaquePointer?
+        var inducer: OpaquePointer?
+        var transferred = false
+
+        defer {
+            if !transferred {
+                if let inducer { condition_inducer_free(inducer) }
+                if let remoteServer { remote_server_free(remoteServer) }
+                tunnel.free()
+            }
+        }
+
+        guard let adapter = tunnel.adapter, let handshake = tunnel.handshake else {
+            throw makeError("Device Conditions tunnel is incomplete")
+        }
+        if let ffiError = remote_server_connect_rsd(adapter, handshake, &remoteServer) {
+            throw error(from: ffiError, fallback: "Failed to connect Conditions remote server")
+        }
+        guard let remoteServer else {
+            throw makeError("Device Conditions remote server was not created")
+        }
+        if let ffiError = condition_inducer_new(remoteServer, &inducer) {
+            throw error(from: ffiError, fallback: "Failed to open ConditionInducer service")
+        }
+        guard let inducer else {
+            throw makeError("ConditionInducer handle was not created")
+        }
+
+        transferred = true
+        return DeviceConditionsConnection(
+            adapter: adapter, handshake: handshake,
+            remoteServer: remoteServer, inducer: inducer
+        )
+    }
+
     func startTunnel() throws {
         tunnelLock.lock()
         if tunnelConnecting {
