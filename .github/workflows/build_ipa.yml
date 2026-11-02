@@ -34,7 +34,7 @@ jobs:
           xcodebuild clean archive \
             -project StikDebug.xcodeproj \
             -scheme "StikDebug" \
-            -configuration Debug \
+            -configuration Release \
             -archivePath build/StikDebug.xcarchive \
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
