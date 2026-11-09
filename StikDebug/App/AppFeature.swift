@@ -22,7 +22,7 @@ enum AppFeature: String, CaseIterable, Identifiable {
         rawValue
     }
 
-    var title: String {
+    var title: LocalizedStringKey {
         switch self {
         case .home:
             return "JIT"
@@ -49,7 +49,7 @@ enum AppFeature: String, CaseIterable, Identifiable {
         }
     }
 
-    var detail: String {
+    var detail: LocalizedStringKey {
         switch self {
         case .home:
             return "Enable JIT for installed apps"
@@ -76,7 +76,7 @@ enum AppFeature: String, CaseIterable, Identifiable {
         }
     }
 
-    var toolTitle: String {
+    var toolTitle: LocalizedStringKey {
         switch self {
         case .location:
             return "Location Simulation"

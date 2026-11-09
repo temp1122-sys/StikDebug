@@ -13,23 +13,35 @@ struct JITEnableConfiguration {
     var scriptName: String?
 }
 
+enum ProcessKillTarget {
+    case pid(Int32)
+    case name(String)
+
+    var description: String {
+        switch self {
+        case .pid(let pid): return String(pid)
+        case .name(let name): return name
+        }
+    }
+}
+
 enum HomeExternalAction: Identifiable {
     case enableJIT(JITEnableConfiguration)
-    case killProcess(Int)
+    case killProcess(ProcessKillTarget)
     case launchApp(String)
 
     var id: String {
         switch self {
         case .enableJIT(let configuration):
             return "enable-\(configuration.bundleID ?? "")-\(configuration.pid ?? 0)-\(configuration.scriptName ?? "")"
-        case .killProcess(let pid):
-            return "kill-\(pid)"
+        case .killProcess(let target):
+            return "kill-\(target)"
         case .launchApp(let bundleID):
             return "launch-\(bundleID)"
         }
     }
 
-    var title: String {
+    var title: LocalizedStringKey {
         switch self {
         case .enableJIT:
             return "Enable JIT?"
@@ -43,23 +55,23 @@ enum HomeExternalAction: Identifiable {
     var message: String {
         switch self {
         case .enableJIT(let configuration):
-            let scriptText = configuration.scriptData == nil ? "" : " and run a script"
-            return "An external link wants to enable JIT\(scriptText) for \(targetDescription(for: configuration))."
-        case .killProcess(let pid):
-            return "An external link wants to kill process \(pid)."
+            let scriptText = configuration.scriptData == nil ? "" : String(localized: " and run a script")
+            return String(localized: "An external link wants to enable JIT\(scriptText) for \(targetDescription(for: configuration)).")
+        case .killProcess(let target):
+            return String(localized: "An external link wants to kill process \(target.description).")
         case .launchApp(let bundleID):
-            return "An external link wants to launch \(bundleID)."
+            return String(localized: "An external link wants to launch \(bundleID).")
         }
     }
 
     var confirmationTitle: String {
         switch self {
         case .enableJIT(let configuration):
-            return configuration.scriptData == nil ? "Enable JIT" : "Enable and Run Script"
+            return configuration.scriptData == nil ? String(localized: "Enable JIT") : String(localized: "Enable and Run Script")
         case .killProcess:
-            return "Kill Process"
+            return String(localized: "Kill Process")
         case .launchApp:
-            return "Launch App"
+            return String(localized: "Launch App")
         }
     }
 
@@ -79,8 +91,8 @@ enum HomeExternalAction: Identifiable {
             return bundleID
         }
         if let pid = configuration.pid {
-            return "process \(pid)"
+            return String(localized: "process \(pid)")
         }
-        return "the requested app"
+        return String(localized: "the requested app")
     }
 }

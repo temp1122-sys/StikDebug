@@ -44,6 +44,8 @@
 | 17.4 – 18.x              | Fully supported      | Stable                                                                |
 | 26.0+              | Supported            | Limited App Availability (Developers need to update their apps to work.) |
 
+See [Officially Supported Apps](SUPPORTED_APPS.md) for the apps supported by the StikDebug team and their bundled scripts.
+
 ## How to Enable JIT
 
 StikDebug enables **JIT** for sideloaded apps on iOS 17.4+ without needing a computer after the initial pairing setup.
@@ -56,7 +58,7 @@ StikDebug enables **JIT** for sideloaded apps on iOS 17.4+ without needing a com
 
 ### Steps
 1. **Obtain a pairing file**  
-   - Detailed guide: [Pairing File Instructions](https://github.com/StikDebug/StikDebug-Guide/blob/main/pairing_file.md) (or ask in Discord).
+   - Detailed guide: [Pairing File Instructions](PAIRING.md) (or ask in Discord).
 
 2. **Set up VPN**  
    - Launch LocalDevVPN and enable the VPN.
@@ -84,6 +86,12 @@ StikDebug enables **JIT** for sideloaded apps on iOS 17.4+ without needing a com
 (Add images to a /screenshots/ folder in the repo and uncomment when ready.)
 -->
 
+## Kill a Process by URL
+
+Use `stikdebug://kill-process?name=ProcessName` to terminate a running process by its exact, case-sensitive executable name, not its bundle ID. For example: `stikdebug://kill-process?name=LiveContainer`. Percent-encode names containing spaces or other special characters.
+
+StikDebug asks for confirmation, then looks up the current PID before terminating the process. If several processes have the same name, use `stikdebug://kill-process?pid=1234` to select one. When both parameters are provided, `pid` takes precedence.
+
 ## Building from Source
 
 > [!IMPORTANT]
@@ -92,7 +100,7 @@ StikDebug enables **JIT** for sideloaded apps on iOS 17.4+ without needing a com
 
 ### Requirements
 - macOS (latest recommended)
-- Xcode 16+ (Xcode 26+ preferred for iOS 26+ support)
+- Xcode 27 or later (required for the new `.xcproj` project format)
 - iOS device on iOS 17.4+ (for testing)
 - Git
 - Basic Xcode/Swift knowledge
